@@ -1,1 +1,133 @@
-<p>carga-masiva works!</p>
+  <app-navbar></app-navbar>
+  <div class="min-h-screen bg-gray-100 p-8">
+  <div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">
+        Cargar Archivo
+      </h1>
+      <p class="text-gray-600 mb-6">
+        Arrastra y suelta tu archivo o haz clic para seleccionar
+      </p>
+
+      <!-- Drop Zone -->
+      <div 
+        class="border-2 border-dashed rounded-xl p-12 text-center transition-all duration-200 cursor-pointer"
+        [ngClass]="{
+          'border-blue-500 bg-blue-50 scale-105': isDragging,
+          'border-green-400 bg-green-50': file && !isDragging,
+          'border-gray-300 hover:border-blue-400 hover:bg-gray-50': !file && !isDragging
+        }"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)">
+        
+        <ng-container *ngIf="!file">
+          <!-- Upload Icon -->
+          <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+          
+          <p class="text-lg font-medium text-gray-700 mb-2">
+            {{ isDragging ? '¡Suelta el archivo aquí!' : 'Arrastra tu archivo aquí' }}
+          </p>
+          <p class="text-sm text-gray-500 mb-4">
+            o haz clic para seleccionar
+          </p>
+          
+          <input 
+            type="file" 
+            #fileInput
+            accept=".txt,.xls,.xlsx"
+            (change)="onFileSelected($event)"
+            class="hidden"
+            id="fileInput">
+          
+          <label 
+            for="fileInput"
+            class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors">
+            Seleccionar archivo
+          </label>
+          
+          <p class="text-xs text-gray-500 mt-4">
+            Formatos permitidos: .txt, .xls, .xlsx (máx. 10MB)
+          </p>
+        </ng-container>
+
+        <!-- File Preview -->
+        <div *ngIf="file" class="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm">
+          <div class="flex items-center gap-3 flex-1">
+            <!-- File Icon -->
+            <svg class="w-10 h-10 text-blue-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            
+            <div class="text-left flex-1 min-w-0">
+              <p class="font-medium text-gray-800 truncate">
+                {{ file.name }}
+              </p>
+              <p class="text-sm text-gray-500">
+                {{ formatFileSize(file.size) }}
+              </p>
+            </div>
+          </div>
+          
+          <button
+            (click)="removeFile()"
+            class="ml-4 p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+            title="Eliminar archivo">
+            <!-- X Icon -->
+            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+        <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-red-700 text-sm">{{ error }}</p>
+      </div>
+
+      <!-- Process Button -->
+      <div *ngIf="file && !error" class="mt-6">
+        <button
+          (click)="processFile()"
+          [disabled]="processing"
+          class="w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-3"
+          [ngClass]="processing 
+            ? 'bg-gray-400 cursor-not-allowed' 
+            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'">
+          
+          <!-- Loading Spinner -->
+          <svg *ngIf="processing" class="w-6 h-6 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          
+          <!-- Check Icon -->
+          <svg *ngIf="!processing" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          
+          {{ processing ? 'Procesando archivo...' : 'Procesar Archivo' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Info Card -->
+    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
+      <h3 class="font-semibold text-blue-900 mb-2">
+        📋 Instrucciones:
+      </h3>
+      <ul class="text-sm text-blue-800 space-y-1">
+        <li>• Solo se aceptan archivos .txt, .xls y .xlsx</li>
+        <li>• El tamaño máximo es de 10MB</li>
+        <li>• Arrastra el archivo o haz clic para seleccionar</li>
+        <li>• Una vez cargado, presiona "Procesar Archivo"</li>
+      </ul>
+    </div>
+  </div>
+</div>

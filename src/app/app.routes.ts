@@ -24,7 +24,7 @@ export const routes: Routes = [
     component: CargaMasiva,
   },
   {
-    path: 'usuario/details/{id}',
+    path: `usuario/details/:id`,
     component: Details,
   },
   {

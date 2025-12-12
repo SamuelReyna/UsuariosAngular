@@ -1,7 +1,8 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { StorageService } from '../storage';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
+import { Router } from '@angular/router';
 
 interface LoginResponse {
   token: string;
@@ -40,8 +41,8 @@ export class AuthService {
                 const user = this.storage.getItem('user') || '';
                 const role = this.storage.getItem('role') || '';
 
-                console.log('user: ', user);
-                console.log('role: ', role);
+                 console.log('user: ', user);
+                 console.log('role: ', role);
               },
               error: (error) => {
                 console.error('Error al decodificar:', error);
@@ -65,27 +66,34 @@ export class AuthService {
   }
 
   decode(): Observable<TokenDecode> {
-    return this.http.get<TokenDecode>(`${this.apiUrl}/decode`).pipe(
-      tap((response) => {
-        this.storage.setItem('user', response.sub);
-        this.storage.setItem('role', response.role);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        let errorMessage = 'Ocurrió un error desconocido';
-        if (error.error instanceof ErrorEvent) {
-          errorMessage = `Error: ${error.error.message}`;
-        } else {
-          errorMessage =
-            error.error?.errorMessage ||
-            error.error?.message ||
-            `Error ${error.status}: ${error.message}`;
-        }
-        return throwError(() => new Error(errorMessage));
+    return this.http
+      .get<TokenDecode>(`${this.apiUrl}/decode`, {
+        headers: {
+          Authorization: `Bearer ${this.getToken()}`,
+        },
       })
-    );
+      .pipe(
+        tap((response) => {
+          this.storage.setItem('user', response.sub);
+          this.storage.setItem('role', response.role);
+        }),
+        catchError((error: HttpErrorResponse) => {
+          let errorMessage = 'Ocurrió un error desconocido';
+          if (error.error instanceof ErrorEvent) {
+            errorMessage = `Error: ${error.error.message}`;
+          } else {
+            errorMessage =
+              error.error?.errorMessage ||
+              error.error?.message ||
+              `Error ${error.status}: ${error.message}`;
+          }
+          return throwError(() => new Error(errorMessage));
+        })
+      );
   }
-
+  private router = inject(Router);
   logout(): void {
+    this.router.navigate(['login']);
     this.storage.removeItem('jwt-token');
   }
   getToken(): string | null {
@@ -95,9 +103,20 @@ export class AuthService {
   public isLoggedIn(): boolean {
     return !!this.getToken(); // Devuelve true si el token existe
   }
-  isAuthentiated(): boolean {
+
+  isExpired(): Observable<boolean> {
     const token = this.storage.getItem('jwt-token');
+
+    if (!token) {
+      return of(true);
+    }
     //validar si el token es valido y no ha expirado.
-    return !!token;
+    return this.decode().pipe(
+      map((response) => {
+        const now = Math.floor(Date.now() / 1000);
+        return response.exp > now;
+      }),
+      catchError(() => of(true))
+    );
   }
 }

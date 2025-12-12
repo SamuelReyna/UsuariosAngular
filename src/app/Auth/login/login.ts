@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // <-- Importa FormsModule
 import { AuthService } from '../../services/auth/auth';
@@ -9,13 +9,20 @@ import { Router } from '@angular/router';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit{
   username = '';
   password = '';
   rememberMe = false;
   showPassword = false;
   errorMessage = '';
 
+  ngOnInit(): void {
+    if (!this.authService.isExpired()) {
+      this.router.navigate(['/']);
+    } else {
+      this.authService.logout();
+    }
+  }
   togglePassword() {
     this.showPassword = !this.showPassword;
   }

@@ -11,28 +11,40 @@ import { AuthService } from '../../services/auth/auth';
   styleUrl: './navbar.css',
 })
 export class Navbar implements OnInit {
+isUserMenuOpen = false;
+userImage = ''; // opcional, reemplaza con la URL real si la tienes
+
+toggleUserMenu() {
+  this.isUserMenuOpen = !this.isUserMenuOpen;
+}
+
+closeUserMenu() {
+  this.isUserMenuOpen = false;
+}
+
+onPerfil() {
+  console.log("Perfil");
+  // navega a /perfil
+}
+
+onConfig() {
+  console.log("Config");
+  // navega a /configuracion
+}
+
+
   private storage = inject(StorageService);
   private authService = inject(AuthService);
-  jwtExist: boolean = false;
-  jwtToken = 'jwt-token';
+
   user: string = '';
   role: string = '';
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
-      this.jwtExist = !!this.storage.getItem(this.jwtToken);
       this.user = this.storage.getItem('user') || '';
       this.role = this.storage.getItem('role') || '';
     } else {
       this.router.navigate(['/login']);
     }
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.jwtExist = !event.url.includes('/login');
-        if (this.storage.getItem(this.jwtToken) !== null) {
-          this.jwtExist = !!this.storage.getItem(this.jwtToken);
-        }
-      });
   }
 
   constructor(private router: Router) {}
@@ -55,7 +67,6 @@ export class Navbar implements OnInit {
   }
 
   onLogout() {
-    this.storage.removeItem(this.jwtToken);
-    this.router.navigate(['login']);
+    this.authService.logout();
   }
 }
