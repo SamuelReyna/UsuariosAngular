@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../auth/auth';
 import { Rol } from '../rol/rol-service';
-import { Colonia } from '../colonia/colonia-service';
+import { direccion } from '../direccion/direccion-service';
 
 export interface User {
   idUser: number;
@@ -25,13 +25,7 @@ export interface User {
   Direcciones: direccion[];
 }
 
-export interface direccion {
-  idDireccion: Number;
-  calle: string;
-  numeroInterior: string;
-  numeroExterior: string;
-  Colonia: Colonia;
-}
+
 
 export interface result {
   correct: boolean;
@@ -67,5 +61,45 @@ export class UsuarioService {
         ContentType: 'application/json',
       },
     });
+  }
+  deleteUser(user: User): Observable<result> {
+    return this.http.delete<result>(`${this.apiUrl}/${user.idUser}`, {
+      headers: {
+        Authorization: `Bearer ${this.auth.getToken()}`,
+      },
+    });
+  }
+
+  editUser(user: User): Observable<result> {
+    return this.http.put<result>(`${this.apiUrl}/${user.idUser}`, user, {
+      headers: {
+        Authorization: `Bearer ${this.auth.getToken()}`,
+        ContentType: 'application/json',
+      },
+    });
+  }
+  logicalDelete(user: User): Observable<result> {
+    return this.http.patch<result>(
+      `${this.apiUrl}/estatus/${user.idUser}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${this.auth.getToken()}`,
+          ContentType: 'application/json',
+        },
+      }
+    );
+  }
+  logicalDelete1(user: User): Observable<result> {
+    return this.http.patch<result>(
+      `${this.apiUrl}/estatus/${user.idUser}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${this.auth.getToken()}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
   }
 }

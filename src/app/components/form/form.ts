@@ -1,24 +1,40 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { Navbar } from '../navbar/navbar';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { PaisService } from '../../services/data/pais/pais-service';
 import { Pais } from '../../services/data/pais/pais-service';
 import { Estado, EstadoService } from '../../services/data/estado/estado-service';
 import { Municipio, MunicipioService } from '../../services/data/municipio/municipio-service';
 import { Colonia, ColoniaService } from '../../services/data/colonia/colonia-service';
 import { FormsModule, NgForm } from '@angular/forms';
-import { direccion, User, UsuarioService } from '../../services/data/usuario/usuario-service';
+import { User, UsuarioService } from '../../services/data/usuario/usuario-service';
 import { Rol, RolService } from '../../services/data/rol/rol-service';
+import { AlertService } from '../../services/alert/alert';
+import { direccion, DireccionService } from '../../services/data/direccion/direccion-service';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-form',
-  imports: [CommonModule, Navbar, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './form.html',
   styleUrl: './form.css',
 })
 export class Form {
+  private activateRoute = inject(ActivatedRoute);
+
   onCancel() {
-    throw new Error('Method not implemented.');
+    this.closeModal.emit();
   }
+
+  @Output() closeModal = new EventEmitter<void>();
+  @Output() cargarUsuarios = new EventEmitter<void>();
+
+  @Input() showPersonalInfo: boolean = true;
+  @Input() showContactInfo: boolean = true;
+  @Input() showAddress: boolean = true;
+  @Input() showAccountInfo: boolean = true;
+
+  // Alternativamente, puedes usar un solo input con modo
+  @Input() formMode: 'full' | 'user-only' | 'address-only' | 'contact-only' | 'custom' = 'full';
+
   direccion: direccion = {
     idDireccion: 0,
     calle: '',
@@ -47,45 +63,110 @@ export class Form {
   municipioSeleccionado: any;
   passwordConfirm: any;
 
-  onSubmit(form: NgForm) {
+  onSubmit(form: any) {
+    if (form.valid) {
+      if (this.formMode === 'address-only') {
+        this.addDireccion();
+      } else {
+        this.addUsuario();
+      }
+    }
+  }
+
+  addDireccion() {
+    // Solo enviar la dirección nueva, NO todo el usuario
+    const direccionData = {
+      idDireccion: 0,
+      calle: this.direccion.calle,
+      numeroInterior: this.direccion.numeroInterior || '',
+      numeroExterior: this.direccion.numeroExterior,
+      usuario: this.usuario.username || this.usuario.idUser, // ID o username del usuario
+      Colonia: {
+        idColonia: this.direccion.Colonia.idColonia,
+        nombre: '',
+        codigoPostal: this.direccion.Colonia.codigoPostal || '',
+        municipio: {
+          idMunicipio: 0,
+          nombre: '',
+          estado: {
+            idEstado: 0,
+            nombre: '',
+            pais: {
+              idPais: 0,
+              nombre: '',
+            },
+          },
+        },
+      },
+    };
+
+    console.log('Dirección a enviar:', direccionData);
+
+    this.direccionService.addDirecion(direccionData).subscribe({
+      next: (response) => {
+        console.log('Respuesta del servidor:', response);
+        this.alertService.success('Dirección agregada exitosamente');
+        // Emitir eventos si existen
+        if (this.closeModal) this.closeModal.emit();
+        if (this.cargarUsuarios) this.cargarUsuarios.emit();
+      },
+      error: (error) => {
+        console.error('Error al agregar dirección:', error);
+        const errorMsg = error?.error?.errorMessage || error?.message || 'Error desconocido';
+        this.alertService.error(`Error al agregar la dirección: ${errorMsg}`);
+      },
+    });
+  }
+
+  addUsuario() {
     const userData = {
       ...this.usuario,
       Rol: {
         idRol: this.usuario.Rol.idRol,
         nombre: '',
       },
-      Direcciones: [
-        {
-          idDireccion: 0,
-          calle: this.direccion.calle,
-          numeroInterior: this.direccion.numeroInterior,
-          numeroExterior: this.direccion.numeroExterior,
-          Colonia: {
-            idColonia: this.direccion.Colonia.idColonia,
-            nombre: '',
-            codigoPostal: '',
-            municipio: {
-              nombre: '',
-              idMunicipio: 0,
-              estado: {
-                idEstado: 0,
+      Direcciones: this.showAddress
+        ? [
+            {
+              idDireccion: 0,
+              calle: this.direccion.calle,
+              numeroInterior: this.direccion.numeroInterior || '',
+              numeroExterior: this.direccion.numeroExterior,
+              Colonia: {
+                idColonia: this.direccion.Colonia.idColonia,
                 nombre: '',
-                pais: {
-                  idPais: 0,
+                codigoPostal: this.direccion.Colonia.codigoPostal || '',
+                municipio: {
+                  idMunicipio: 0,
                   nombre: '',
+                  estado: {
+                    idEstado: 0,
+                    nombre: '',
+                    pais: {
+                      idPais: 0,
+                      nombre: '',
+                    },
+                  },
                 },
               },
             },
-          },
-        },
-      ],
+          ]
+        : [],
     };
+
+    console.log('Usuario a enviar:', userData);
+
     this.usuarioService.addUser(userData).subscribe({
       next: (response) => {
-        console.log(response);
+        console.log('Respuesta del servidor:', response);
+        this.alertService.success('Usuario creado exitosamente');
+        if (this.cargarUsuarios) this.cargarUsuarios.emit();
+        if (this.closeModal) this.closeModal.emit();
       },
       error: (error) => {
         console.error('Error al crear usuario:', error);
+        const errorMsg = error?.error?.errorMessage || error?.message || 'Error desconocido';
+        this.alertService.error(`Error al crear el usuario: ${errorMsg}`);
       },
     });
   }
@@ -126,8 +207,43 @@ export class Form {
   private coloniaService = inject(ColoniaService);
   private rolService = inject(RolService);
   private usuarioService = inject(UsuarioService);
-
+  private alertService = inject(AlertService);
+  private direccionService = inject(DireccionService);
+  id: number | null = null;
+  configureSectionVisibility() {
+    switch (this.formMode) {
+      case 'user-only':
+        this.showPersonalInfo = true;
+        this.showContactInfo = true;
+        this.showAddress = false;
+        this.showAccountInfo = true;
+        break;
+      case 'address-only':
+        this.showPersonalInfo = false;
+        this.showContactInfo = false;
+        this.showAddress = true;
+        this.showAccountInfo = false;
+        break;
+      case 'contact-only':
+        this.showPersonalInfo = false;
+        this.showContactInfo = true;
+        this.showAddress = false;
+        this.showAccountInfo = false;
+        break;
+      case 'custom':
+        // Usa los valores de los @Input individuales
+        break;
+      case 'full':
+      default:
+        this.showPersonalInfo = true;
+        this.showContactInfo = true;
+        this.showAddress = true;
+        this.showAccountInfo = true;
+        break;
+    }
+  }
   ngOnInit(): void {
+    this.configureSectionVisibility();
     this.paisService.getAll().subscribe({
       next: (response) => {
         this.paises = response.object;
@@ -160,6 +276,10 @@ export class Form {
         this.roles = response.object;
         console.log('roles', this.roles);
       },
+    });
+    this.activateRoute.paramMap.subscribe((params) => {
+      const idParam = params.get('id');
+      this.id = idParam ? Number(idParam) : 0;
     });
   }
 

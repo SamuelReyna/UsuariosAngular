@@ -1,500 +1,490 @@
-<app-navbar></app-navbar>
-<div class="min-h-screen bg-gray-50 p-4 md:p-8">
-  <div class="max-w-6xl mx-auto">
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">Agregar Usuario</h1>
+<form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)" class="space-y-6">
+  <!-- Información Personal -->
+  <div *ngIf="showPersonalInfo" class="border-b pb-6">
+    <h2 class="text-xl font-semibold text-gray-700 mb-4">Información Personal</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="nombres">
+          Nombre(s) <span class="text-red-500">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="nombres"
+          type="text"
+          placeholder="Nombre(s)"
+          name="nombres"
+          [(ngModel)]="usuario.nombreUsuario"
+          required
+          #nombres="ngModel"
+        />
+        <p *ngIf="nombres.invalid && nombres.touched" class="text-red-500 text-xs mt-1">
+          El nombre es requerido
+        </p>
+      </div>
 
-    <div class="bg-white rounded-lg shadow-md p-6 md:p-8">
-      <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)" class="space-y-6">
-        <!-- Información Personal -->
-        <div class="border-b pb-6">
-          <h2 class="text-xl font-semibold text-gray-700 mb-4">Información Personal</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="nombres">
-                Nombre(s) <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="nombres"
-                type="text"
-                placeholder="Nombre(s)"
-                name="nombres"
-                [(ngModel)]="usuario.nombreUsuario"
-                required
-                #nombres="ngModel"
-              />
-              <p *ngIf="nombres.invalid && nombres.touched" class="text-red-500 text-xs mt-1">
-                El nombre es requerido
-              </p>
-            </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="apellidoPaterno">
+          Apellido Paterno <span class="text-red-500">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="apellidoPaterno"
+          type="text"
+          placeholder="Apellido Paterno"
+          name="apellidoPaterno"
+          [(ngModel)]="usuario.apellidoPaterno"
+          required
+          #apellidoPaterno="ngModel"
+        />
+        <p
+          *ngIf="apellidoPaterno.invalid && apellidoPaterno.touched"
+          class="text-red-500 text-xs mt-1"
+        >
+          El apellido paterno es requerido
+        </p>
+      </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="apellidoPaterno">
-                Apellido Paterno <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="apellidoPaterno"
-                type="text"
-                placeholder="Apellido Paterno"
-                name="apellidoPaterno"
-                [(ngModel)]="usuario.apellidoPaterno"
-                required
-                #apellidoPaterno="ngModel"
-              />
-              <p
-                *ngIf="apellidoPaterno.invalid && apellidoPaterno.touched"
-                class="text-red-500 text-xs mt-1"
-              >
-                El apellido paterno es requerido
-              </p>
-            </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="apellidoMaterno">
+          Apellido Materno
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="apellidoMaterno"
+          type="text"
+          placeholder="Apellido Materno"
+          name="apellidoMaterno"
+          [(ngModel)]="usuario.apellidoMaterno"
+        />
+      </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="apellidoMaterno">
-                Apellido Materno
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="apellidoMaterno"
-                type="text"
-                placeholder="Apellido Materno"
-                name="apellidoMaterno"
-                [(ngModel)]="usuario.apellidoMaterno"
-              />
-            </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="fechaNacimiento">
+          Fecha de Nacimiento <span class="text-red-500">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="fechaNacimiento"
+          type="date"
+          name="fechaNacimiento"
+          [(ngModel)]="usuario.fechaNacimiento"
+          required
+          #fechaNacimiento="ngModel"
+        />
+        <p
+          *ngIf="fechaNacimiento.invalid && fechaNacimiento.touched"
+          class="text-red-500 text-xs mt-1"
+        >
+          La fecha de nacimiento es requerida
+        </p>
+      </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="fechaNacimiento">
-                Fecha de Nacimiento <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="fechaNacimiento"
-                type="date"
-                name="fechaNacimiento"
-                [(ngModel)]="usuario.fechaNacimiento"
-                required
-                #fechaNacimiento="ngModel"
-              />
-              <p
-                *ngIf="fechaNacimiento.invalid && fechaNacimiento.touched"
-                class="text-red-500 text-xs mt-1"
-              >
-                La fecha de nacimiento es requerida
-              </p>
-            </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="curp">
+          CURP <span class="text-red-500">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent uppercase"
+          id="curp"
+          type="text"
+          placeholder="CURP"
+          name="curp"
+          [(ngModel)]="usuario.curp"
+          maxlength="18"
+          required
+          #curp="ngModel"
+        />
+        <p *ngIf="curp.invalid && curp.touched" class="text-red-500 text-xs mt-1">
+          El CURP es requerido
+        </p>
+      </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="curp">
-                CURP <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent uppercase"
-                id="curp"
-                type="text"
-                placeholder="CURP"
-                name="curp"
-                [(ngModel)]="usuario.curp"
-                maxlength="18"
-                required
-                #curp="ngModel"
-              />
-              <p *ngIf="curp.invalid && curp.touched" class="text-red-500 text-xs mt-1">
-                El CURP es requerido
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Sexo <span class="text-red-500">*</span>
-              </label>
-              <div class="flex items-center space-x-6 mt-3">
-                <label class="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="sexo"
-                    value="M"
-                    [(ngModel)]="usuario.sexo"
-                    class="w-4 h-4 text-blue-600"
-                    required
-                  />
-                  <span class="ml-2 text-gray-700">Masculino</span>
-                </label>
-                <label class="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="sexo"
-                    value="F"
-                    [(ngModel)]="usuario.sexo"
-                    class="w-4 h-4 text-blue-600"
-                    required
-                  />
-                  <span class="ml-2 text-gray-700">Femenino</span>
-                </label>
-              </div>
-            </div>
-
-            <div class="md:col-span-2 lg:col-span-3">
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="imagen">
-                Fotografía
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="imagen"
-                type="file"
-                accept="image/*"
-                (change)="onFileSelected($event)"
-              />
-            </div>
-          </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Sexo <span class="text-red-500">*</span>
+        </label>
+        <div class="flex items-center space-x-6 mt-3">
+          <label class="flex items-center cursor-pointer">
+            <input
+              type="radio"
+              name="sexo"
+              value="M"
+              [(ngModel)]="usuario.sexo"
+              class="w-4 h-4 text-blue-600"
+              required
+            />
+            <span class="ml-2 text-gray-700">Masculino</span>
+          </label>
+          <label class="flex items-center cursor-pointer">
+            <input
+              type="radio"
+              name="sexo"
+              value="F"
+              [(ngModel)]="usuario.sexo"
+              class="w-4 h-4 text-blue-600"
+              required
+            />
+            <span class="ml-2 text-gray-700">Femenino</span>
+          </label>
         </div>
+      </div>
 
-        <!-- Información de Contacto -->
-        <div class="border-b pb-6">
-          <h2 class="text-xl font-semibold text-gray-700 mb-4">Información de Contacto</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="email">
-                Email <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="email"
-                type="email"
-                placeholder="correo@ejemplo.com"
-                name="email"
-                [(ngModel)]="usuario.email"
-                required
-                email
-                #email="ngModel"
-              />
-              <p *ngIf="email.invalid && email.touched" class="text-red-500 text-xs mt-1">
-                Ingrese un email válido
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="telefono">
-                Teléfono
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="telefono"
-                type="tel"
-                placeholder="(555) 123-4567"
-                name="telefono"
-                [(ngModel)]="usuario.telefono"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="celular">
-                Celular <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="celular"
-                type="tel"
-                placeholder="(555) 987-6543"
-                name="celular"
-                [(ngModel)]="usuario.celular"
-                required
-                #celular="ngModel"
-              />
-              <p *ngIf="celular.invalid && celular.touched" class="text-red-500 text-xs mt-1">
-                El celular es requerido
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Dirección -->
-        <div class="border-b pb-6">
-          <h2 class="text-xl font-semibold text-gray-700 mb-4">Dirección</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="calle">
-                Calle <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="calle"
-                type="text"
-                placeholder="Nombre de la calle"
-                name="calle"
-                [(ngModel)]="direccion.calle"
-                required
-                #calle="ngModel"
-              />
-              <p *ngIf="calle.invalid && calle.touched" class="text-red-500 text-xs mt-1">
-                La calle es requerida
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="numeroExterior">
-                Número Exterior <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="numeroExterior"
-                type="text"
-                placeholder="No. Ext."
-                name="numeroExterior"
-                [(ngModel)]="direccion.numeroExterior"
-                required
-                #numeroExterior="ngModel"
-              />
-              <p
-                *ngIf="numeroExterior.invalid && numeroExterior.touched"
-                class="text-red-500 text-xs mt-1"
-              >
-                El número exterior es requerido
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="numeroInterior">
-                Número Interior
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="numeroInterior"
-                type="text"
-                placeholder="No. Int."
-                name="numeroInterior"
-                [(ngModel)]="direccion.numeroInterior"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="pais">
-                País <span class="text-red-500">*</span>
-              </label>
-              <select
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="pais"
-                name="pais"
-                [(ngModel)]="paisSeleccionado"
-                (change)="onPaisChange($event)"
-                required
-                #pais="ngModel"
-              >
-                <option value="" selected disabled>Seleccionar país</option>
-                <option *ngFor="let pais of paises" [value]="pais.idPais">
-                  {{ pais.nombre }}
-                </option>
-              </select>
-              <p *ngIf="pais.invalid && pais.touched" class="text-red-500 text-xs mt-1">
-                El país es requerido
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="estado">
-                Estado <span class="text-red-500">*</span>
-              </label>
-              <select
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="estado"
-                name="estado"
-                [(ngModel)]="estadoSeleccionado"
-                (change)="onEstadoChange($event)"
-                required
-                #estado="ngModel"
-              >
-                <option value="" selected disabled>Seleccionar estado</option>
-                <option *ngFor="let estado of estados" [value]="estado.idEstado">
-                  {{ estado.nombre }}
-                </option>
-              </select>
-              <p *ngIf="estado.invalid && estado.touched" class="text-red-500 text-xs mt-1">
-                El estado es requerido
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="municipio">
-                Municipio <span class="text-red-500">*</span>
-              </label>
-              <select
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="municipio"
-                name="municipio"
-                [(ngModel)]="municipioSeleccionado"
-                (change)="onMunicipioChange($event)"
-                required
-                #municipio="ngModel"
-              >
-                <option value="" selected disabled>Seleccionar municipio</option>
-                <option *ngFor="let municipio of municipios" [value]="municipio.idMunicipio">
-                  {{ municipio.nombre }}
-                </option>
-              </select>
-              <p *ngIf="municipio.invalid && municipio.touched" class="text-red-500 text-xs mt-1">
-                El municipio es requerido
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="colonia">
-                Colonia <span class="text-red-500">*</span>
-              </label>
-              <select
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="colonia"
-                name="colonia"
-                [(ngModel)]="direccion.Colonia.idColonia"
-                (change)="onColoniaChange($event)"
-                required
-                #coloniaSelect="ngModel"
-              >
-                <option value="" disabled>Seleccionar colonia</option>
-                <option *ngFor="let colonia of colonias" [value]="colonia.idColonia">
-                  {{ colonia.nombre }}
-                </option>
-              </select>
-              <p
-                *ngIf="coloniaSelect.invalid && coloniaSelect.touched"
-                class="text-red-500 text-xs mt-1"
-              >
-                La colonia es requerida
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="codigoPostal">
-                Código Postal <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="codigoPostal"
-                type="text"
-                placeholder="12345"
-                name="codigoPostal"
-                [(ngModel)]="direccion.Colonia.codigoPostal"
-                maxlength="5"
-                required
-                #codigoPostalInput="ngModel"
-              />
-              <p
-                *ngIf="codigoPostalInput.invalid && codigoPostalInput.touched"
-                class="text-red-500 text-xs mt-1"
-              >
-                El código postal es requerido
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Información de Cuenta -->
-        <div class="border-b pb-6">
-          <h2 class="text-xl font-semibold text-gray-700 mb-4">Información de Cuenta</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="username">
-                Usuario <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="username"
-                type="text"
-                placeholder="Username"
-                name="username"
-                [(ngModel)]="usuario.username"
-                required
-                #username="ngModel"
-              />
-              <p *ngIf="username.invalid && username.touched" class="text-red-500 text-xs mt-1">
-                El usuario es requerido
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="rol">
-                Rol <span class="text-red-500">*</span>
-              </label>
-              <select
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="rol"
-                name="rol"
-                [(ngModel)]="usuario.Rol.idRol"
-                required
-                #rol="ngModel"
-              >
-                <option selected disabled>Seleccionar rol</option>
-
-                <option *ngFor="let rol of roles" [value]="rol.idRol">
-                  {{ rol.nombre }}
-                </option>
-              </select>
-              <p *ngIf="rol.invalid && rol.touched" class="text-red-500 text-xs mt-1">
-                El rol es requerido
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="password">
-                Contraseña <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                name="password"
-                [(ngModel)]="usuario.password"
-                required
-                #password="ngModel"
-              />
-              <p *ngIf="password.invalid && password.touched" class="text-red-500 text-xs mt-1">
-                La contraseña es requerida
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="passwordConfirm">
-                Confirmar Contraseña <span class="text-red-500">*</span>
-              </label>
-              <input
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="passwordConfirm"
-                type="password"
-                placeholder="••••••••"
-                name="passwordConfirm"
-                [(ngModel)]="passwordConfirm"
-                required
-                #passwordConfirmField="ngModel"
-              />
-              <p
-                *ngIf="passwordConfirmField.touched && usuario.password !== passwordConfirm"
-                class="text-red-500 text-xs mt-1"
-              >
-                Las contraseñas no coinciden
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Botones -->
-        <div class="flex justify-end space-x-4 pt-4">
-          <button
-            type="button"
-            (click)="onCancel()"
-            class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            [disabled]="!userForm.form.valid || usuario.password !== passwordConfirm"
-            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-          >
-            Guardar Usuario
-          </button>
-        </div>
-      </form>
+      <div class="md:col-span-2 lg:col-span-3">
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="imagen">
+          Fotografía
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="imagen"
+          type="file"
+          accept="image/*"
+          (change)="onFileSelected($event)"
+        />
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- Información de Contacto -->
+  <div *ngIf="showContactInfo" class="border-b pb-6">
+    <h2 class="text-xl font-semibold text-gray-700 mb-4">Información de Contacto</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="email">
+          Email <span class="text-red-500">*</span>
+        </label>
+        <input type="hidden" name="idUser" />
+        <input type="hidden" name="idDireccion" />
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="email"
+          type="email"
+          placeholder="correo@ejemplo.com"
+          name="email"
+          [(ngModel)]="usuario.email"
+          required
+          email
+          #email="ngModel"
+        />
+        <p *ngIf="email.invalid && email.touched" class="text-red-500 text-xs mt-1">
+          Ingrese un email válido
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="telefono">
+          Teléfono
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="telefono"
+          type="tel"
+          placeholder="(555) 123-4567"
+          name="telefono"
+          [(ngModel)]="usuario.telefono"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="celular">
+          Celular <span class="text-red-500">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="celular"
+          type="tel"
+          placeholder="(555) 987-6543"
+          name="celular"
+          [(ngModel)]="usuario.celular"
+          required
+          #celular="ngModel"
+        />
+        <p *ngIf="celular.invalid && celular.touched" class="text-red-500 text-xs mt-1">
+          El celular es requerido
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dirección -->
+  <div *ngIf="showAddress" class="border-b pb-6">
+    <h2 class="text-xl font-semibold text-gray-700 mb-4">Dirección</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="calle">
+          Calle <span class="text-red-500">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="calle"
+          type="text"
+          placeholder="Nombre de la calle"
+          name="calle"
+          [(ngModel)]="direccion.calle"
+          required
+          #calle="ngModel"
+        />
+        <p *ngIf="calle.invalid && calle.touched" class="text-red-500 text-xs mt-1">
+          La calle es requerida
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="numeroExterior">
+          Número Exterior <span class="text-red-500">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="numeroExterior"
+          type="text"
+          placeholder="No. Ext."
+          name="numeroExterior"
+          [(ngModel)]="direccion.numeroExterior"
+          required
+          #numeroExterior="ngModel"
+        />
+        <p
+          *ngIf="numeroExterior.invalid && numeroExterior.touched"
+          class="text-red-500 text-xs mt-1"
+        >
+          El número exterior es requerido
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="numeroInterior">
+          Número Interior
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="numeroInterior"
+          type="text"
+          placeholder="No. Int."
+          name="numeroInterior"
+          [(ngModel)]="direccion.numeroInterior"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="pais">
+          País <span class="text-red-500">*</span>
+        </label>
+        <select
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="pais"
+          name="pais"
+          [(ngModel)]="paisSeleccionado"
+          (change)="onPaisChange($event)"
+          required
+          #pais="ngModel"
+        >
+          <option value="" selected disabled>Seleccionar país</option>
+          <option *ngFor="let pais of paises" [value]="pais.idPais">
+            {{ pais.nombre }}
+          </option>
+        </select>
+        <p *ngIf="pais.invalid && pais.touched" class="text-red-500 text-xs mt-1">
+          El país es requerido
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="estado">
+          Estado <span class="text-red-500">*</span>
+        </label>
+        <select
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="estado"
+          name="estado"
+          [(ngModel)]="estadoSeleccionado"
+          (change)="onEstadoChange($event)"
+          required
+          #estado="ngModel"
+        >
+          <option value="" selected disabled>Seleccionar estado</option>
+          <option *ngFor="let estado of estados" [value]="estado.idEstado">
+            {{ estado.nombre }}
+          </option>
+        </select>
+        <p *ngIf="estado.invalid && estado.touched" class="text-red-500 text-xs mt-1">
+          El estado es requerido
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="municipio">
+          Municipio <span class="text-red-500">*</span>
+        </label>
+        <select
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="municipio"
+          name="municipio"
+          [(ngModel)]="municipioSeleccionado"
+          (change)="onMunicipioChange($event)"
+          required
+          #municipio="ngModel"
+        >
+          <option value="" selected disabled>Seleccionar municipio</option>
+          <option *ngFor="let municipio of municipios" [value]="municipio.idMunicipio">
+            {{ municipio.nombre }}
+          </option>
+        </select>
+        <p *ngIf="municipio.invalid && municipio.touched" class="text-red-500 text-xs mt-1">
+          El municipio es requerido
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="colonia">
+          Colonia <span class="text-red-500">*</span>
+        </label>
+        <select
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="colonia"
+          name="colonia"
+          [(ngModel)]="direccion.Colonia.idColonia"
+          (change)="onColoniaChange($event)"
+          required
+          #coloniaSelect="ngModel"
+        >
+          <option value="" disabled>Seleccionar colonia</option>
+          <option *ngFor="let colonia of colonias" [value]="colonia.idColonia">
+            {{ colonia.nombre }}
+          </option>
+        </select>
+        <p *ngIf="coloniaSelect.invalid && coloniaSelect.touched" class="text-red-500 text-xs mt-1">
+          La colonia es requerida
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="codigoPostal">
+          Código Postal <span class="text-red-500">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="codigoPostal"
+          type="text"
+          placeholder="12345"
+          name="codigoPostal"
+          [(ngModel)]="direccion.Colonia.codigoPostal"
+          maxlength="5"
+          required
+          #codigoPostalInput="ngModel"
+        />
+        <p
+          *ngIf="codigoPostalInput.invalid && codigoPostalInput.touched"
+          class="text-red-500 text-xs mt-1"
+        >
+          El código postal es requerido
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Información de Cuenta -->
+  <div *ngIf="showAccountInfo" class="border-b pb-6">
+    <h2 class="text-xl font-semibold text-gray-700 mb-4">Información de Cuenta</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="username">
+          Usuario <span class="text-red-500">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="username"
+          type="text"
+          placeholder="Username"
+          name="username"
+          [(ngModel)]="usuario.username"
+          required
+          #username="ngModel"
+        />
+        <p *ngIf="username.invalid && username.touched" class="text-red-500 text-xs mt-1">
+          El usuario es requerido
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="rol">
+          Rol <span class="text-red-500">*</span>
+        </label>
+        <select
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="rol"
+          name="rol"
+          [(ngModel)]="usuario.Rol.idRol"
+          required
+          #rol="ngModel"
+        >
+          <option selected disabled>Seleccionar rol</option>
+
+          <option *ngFor="let rol of roles" [value]="rol.idRol">
+            {{ rol.nombre }}
+          </option>
+        </select>
+        <p *ngIf="rol.invalid && rol.touched" class="text-red-500 text-xs mt-1">
+          El rol es requerido
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="password">
+          Contraseña <span class="text-red-500">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="password"
+          type="password"
+          placeholder="••••••••"
+          name="password"
+          [(ngModel)]="usuario.password"
+          required
+          #password="ngModel"
+        />
+        <p *ngIf="password.invalid && password.touched" class="text-red-500 text-xs mt-1">
+          La contraseña es requerida
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" for="passwordConfirm">
+          Confirmar Contraseña <span class="text-red-500">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          id="passwordConfirm"
+          type="password"
+          placeholder="••••••••"
+          name="passwordConfirm"
+          [(ngModel)]="passwordConfirm"
+          required
+          #passwordConfirmField="ngModel"
+        />
+        <p
+          *ngIf="passwordConfirmField.touched && usuario.password !== passwordConfirm"
+          class="text-red-500 text-xs mt-1"
+        >
+          Las contraseñas no coinciden
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="flex justify-end space-x-4 pt-4">
+    <button
+      type="button"
+      (click)="onCancel()"
+      class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+    >
+      Cancelar
+    </button>
+    <button
+      type="submit"
+      [disabled]="!userForm.form.valid || (showAccountInfo && usuario.password !== passwordConfirm)"
+      class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+    >
+      {{ showAddress && !showAccountInfo ? 'Guardar Dirección' : 'Guardar Usuario' }}
+    </button>
+  </div>
+</form>

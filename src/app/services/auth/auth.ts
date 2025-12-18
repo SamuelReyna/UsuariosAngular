@@ -41,8 +41,8 @@ export class AuthService {
                 const user = this.storage.getItem('user') || '';
                 const role = this.storage.getItem('role') || '';
 
-                 console.log('user: ', user);
-                 console.log('role: ', role);
+                console.log('user: ', user);
+                console.log('role: ', role);
               },
               error: (error) => {
                 console.error('Error al decodificar:', error);
