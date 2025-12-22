@@ -484,7 +484,8 @@
       [disabled]="!userForm.form.valid || (showAccountInfo && usuario.password !== passwordConfirm)"
       class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
     >
-      {{ showAddress && !showAccountInfo ? 'Guardar Dirección' : 'Guardar Usuario' }}
+      {{ showAddress && !showAccountInfo ? (editandoDireccion ? 'Editar Dirección' : 'Agregar Dirección') : 'Guardar Usuario' }}
+
     </button>
   </div>
 </form>

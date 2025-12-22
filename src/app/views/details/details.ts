@@ -6,14 +6,47 @@ import { Navbar } from '../../components/navbar/navbar';
 import { direccion, DireccionService } from '../../services/data/direccion/direccion-service';
 import { AlertService } from '../../services/alert/alert';
 import { Form } from '../../components/form/form';
+import { FormsModule } from '@angular/forms';
 
+interface password {
+  password: string;
+  confirmPassword: string;
+}
 @Component({
   selector: 'app-details',
-  imports: [CommonModule, Navbar, Form],
+  imports: [CommonModule, Navbar, Form, FormsModule],
   templateUrl: './details.html',
   styleUrl: './details.css',
 })
 export class Details implements OnInit {
+  onCancel() {
+    this.closeModal();
+  }
+  changePassword() {
+    this.usuarioService.changePassword(this.user, this.passwordData.password).subscribe({
+      next: (response) => {
+        this.alertService.success('Contraseña cambiada éxitosamente');
+        this.closeModal();
+      },
+      error: (err) => {
+        this.alertService.error('Error al cambiar la contraseña');
+        console.log('error al cambiar la contraseña', err);
+      },
+    });
+  }
+
+  editandoDireccion: boolean = false;
+
+  openEditDireccion(direccion: direccion) {
+    this.editandoDireccion = true;
+    this.modalFormOpen = true;
+    this.direccionSeleccionada = direccion;
+  }
+
+  passwordModalOpen = false;
+  openPasswordModal() {
+    this.passwordModalOpen = true;
+  }
   confirmarEliminacion() {
     this.direccionService.deleteDireccion(this.direccionSeleccionada?.idDireccion ?? 0).subscribe({
       next: (response) => {
@@ -34,6 +67,7 @@ export class Details implements OnInit {
   closeModal() {
     this.isModalOpen = false;
     this.modalFormOpen = false;
+    this.passwordModalOpen = false;
   }
   openFormModal() {
     this.modalFormOpen = true;
@@ -45,6 +79,8 @@ export class Details implements OnInit {
   private alertService = inject(AlertService);
   user!: User;
   isModalOpen = false;
+  localUser = localStorage.getItem('user');
+
   ngOnInit(): void {
     this.getUser();
   }
@@ -61,12 +97,13 @@ export class Details implements OnInit {
       });
     }
   }
+  passwordData: password = { password: '', confirmPassword: '' };
 
   direccionSeleccionada: direccion | null = null;
   viewDireccion(direccion: direccion): void {}
-  editDireccion(direccion: direccion): void {}
   deleteDireccion(direccion: direccion): void {
     this.direccionSeleccionada = direccion;
     this.isModalOpen = true;
   }
+  defaultAvatar = 'https://ui-avatars.com/api/?name=' + this.user;
 }

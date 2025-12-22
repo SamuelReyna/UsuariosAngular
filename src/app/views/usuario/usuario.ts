@@ -20,8 +20,6 @@ export class Usuario {
     this.cargarUsuarios();
   }
 
-  // constructor(private router: Router) {}
-
   private router = inject(Router);
 
   viewUser(user: User): void {
@@ -76,10 +74,16 @@ export class Usuario {
   openFormModal() {
     this.modalFormOpen = true;
   }
-
   closeModal() {
     this.modalFormOpen = false;
     this.isModalOpen = false;
+    this.openDisableModal = false;
+    this.usuarioASeleccionado = null;
+  }
+  openDisableModal = false;
+  confirmDisable(user: User) {
+    this.openDisableModal = true;
+    this.usuarioASeleccionado = user;
   }
 
   onDisabled(user: User) {
@@ -100,8 +104,8 @@ export class Usuario {
         );
       },
     });
+    this.closeModal();
   }
-
   // Cierra el modal si se hace clic fuera de él
   onOverlayClick(event: MouseEvent) {
     if (event.target === event.currentTarget) {

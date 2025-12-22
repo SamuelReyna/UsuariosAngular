@@ -7,6 +7,8 @@ import { Router } from '@angular/router';
 interface LoginResponse {
   token: string;
   errorMessage: string;
+  id: number;
+  img: string;
 }
 interface TokenDecode {
   sub: string;
@@ -34,6 +36,8 @@ export class AuthService {
           if (response.token) {
             const token: string = response.token;
             this.storage.setItem('jwt-token', token);
+            this.storage.setItem('id', response.id.toString());
+            this.storage.setItem('img', response.img);
             this.decode().subscribe({
               next: (decoded) => {
                 console.log('decoded:', decoded);
@@ -94,6 +98,8 @@ export class AuthService {
   private router = inject(Router);
   logout(): void {
     this.router.navigate(['login']);
+    this.storage.removeItem('user');
+    this.storage.removeItem('role');
     this.storage.removeItem('jwt-token');
   }
   getToken(): string | null {

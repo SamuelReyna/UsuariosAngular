@@ -26,27 +26,19 @@ export class DireccionService {
       },
     });
   }
-  addDirecion(direccion: direccion): Observable<result> {
-    return this.http.post<result>(
-      `${this.apiUrl}`,
-      { direccion },
-      {
-        headers: {
-          Authorization: `Bearer ${this.auth.getToken()}`,
-        },
-      }
-    );
+  addDirecion(Usuario: any): Observable<result> {
+    return this.http.post<result>(`${this.apiUrl}`, Usuario, {
+      headers: {
+        Authorization: `Bearer ${this.auth.getToken()}`,
+      },
+    });
   }
-  updateDireccion(usuario: User): Observable<result> {
-    return this.http.put<result>(
-      `${this.apiUrl}/${usuario.Direcciones[0].idDireccion}`,
-      { usuario },
-      {
-        headers: {
-          Authorization: `Bearer ${this.auth.getToken()}`,
-        },
-      }
-    );
+  updateDireccion(Usuario: User): Observable<result> {
+    return this.http.put<result>(`${this.apiUrl}/${Usuario.Direcciones[0].idDireccion}`, Usuario, {
+      headers: {
+        Authorization: `Bearer ${this.auth.getToken()}`,
+      },
+    });
   }
   deleteDireccion(id: Number): Observable<result> {
     return this.http.delete<result>(`${this.apiUrl}/${id}`, {
@@ -54,5 +46,17 @@ export class DireccionService {
         Authorization: `Bearer ${this.auth.getToken()}`,
       },
     });
+  }
+  update(usuario: User): Observable<result> {
+    return this.http.put<result>(
+      `${this.apiUrl}/${usuario.Direcciones[0].idDireccion}`,
+      usuario.Direcciones[0],
+      {
+        headers: {
+          Authorization: `Bearer ${this.auth.getToken()}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
   }
 }

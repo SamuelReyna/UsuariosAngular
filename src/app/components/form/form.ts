@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { CommonModule, TitleCasePipe } from '@angular/common';
+import { Component, EventEmitter, inject, Input, Output, SimpleChanges } from '@angular/core';
 import { PaisService } from '../../services/data/pais/pais-service';
 import { Pais } from '../../services/data/pais/pais-service';
 import { Estado, EstadoService } from '../../services/data/estado/estado-service';
 import { Municipio, MunicipioService } from '../../services/data/municipio/municipio-service';
 import { Colonia, ColoniaService } from '../../services/data/colonia/colonia-service';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { User, UsuarioService } from '../../services/data/usuario/usuario-service';
 import { Rol, RolService } from '../../services/data/rol/rol-service';
 import { AlertService } from '../../services/alert/alert';
@@ -24,8 +24,12 @@ export class Form {
     this.closeModal.emit();
   }
 
+  @Input() idUser: number | null = null;
+  @Input() direccionSeleccionada: direccion | null = null;
+  @Input() editandoDireccion: boolean = false;
   @Output() closeModal = new EventEmitter<void>();
   @Output() cargarUsuarios = new EventEmitter<void>();
+  @Output() getUser = new EventEmitter<void>();
 
   @Input() showPersonalInfo: boolean = true;
   @Input() showContactInfo: boolean = true;
@@ -66,41 +70,124 @@ export class Form {
   onSubmit(form: any) {
     if (form.valid) {
       if (this.formMode === 'address-only') {
-        this.addDireccion();
+        if (this.editandoDireccion) {
+          this.editDireccion();
+        } else {
+          this.addDireccion();
+        }
       } else {
         this.addUsuario();
       }
     }
   }
+  ngOnChanges(changes: SimpleChanges): void {
+    // Detectar cuando cambia direccionSeleccionada
+    if (changes['direccionSeleccionada'] && this.direccionSeleccionada) {
+      this.cargarDireccionEnFormulario();
+    }
+  }
 
-  addDireccion() {
-    // Solo enviar la dirección nueva, NO todo el usuario
+  cargarDireccionEnFormulario(): void {
+    if (this.direccionSeleccionada) {
+      // Asignar los valores de la dirección seleccionada al formulario
+      console.log('Cargando dirección en formulario:', this.direccionSeleccionada);
+      this.direccion = {
+        idDireccion: this.direccionSeleccionada.idDireccion,
+        calle: this.direccionSeleccionada.calle,
+        numeroInterior: this.direccionSeleccionada.numeroInterior,
+        numeroExterior: this.direccionSeleccionada.numeroExterior,
+        Colonia: {
+          idColonia: this.direccionSeleccionada.Colonia.idColonia,
+          nombre: this.direccionSeleccionada.Colonia.nombre,
+          codigoPostal: this.direccionSeleccionada.Colonia.codigoPostal,
+          municipio: this.direccionSeleccionada.Colonia.municipio,
+        },
+      };
+
+      // Cargar las dependencias en cascada para los selects
+      this.cargarDependenciasDireccion();
+    }
+  }
+
+  cargarDependenciasDireccion(): void {
+    if (this.direccionSeleccionada) {
+      const idPais = this.direccionSeleccionada.Colonia.municipio.estado.pais.idPais;
+      const idEstado = this.direccionSeleccionada.Colonia.municipio.estado.idEstado;
+      const idMunicipio = this.direccionSeleccionada.Colonia.municipio.idMunicipio;
+
+      // Cargar estados del país
+      this.estadoService.getByIdPais(idPais).subscribe({
+        next: (response) => {
+          this.estados = response.object;
+          this.estadoSeleccionado = idEstado;
+        },
+      });
+
+      // Cargar municipios del estado
+      this.municipioService.getByEstado(idEstado).subscribe({
+        next: (response) => {
+          this.municipios = response.object;
+          this.municipioSeleccionado = idMunicipio;
+        },
+      });
+
+      // Cargar colonias del municipio
+      this.coloniaService.getByMunicipio(idMunicipio).subscribe({
+        next: (response) => {
+          this.colonias = response.object;
+        },
+      });
+
+      // Establecer el país seleccionado
+      this.paisSeleccionado = idPais;
+    }
+  }
+  editDireccion() {
     const direccionData = {
-      idDireccion: 0,
-      calle: this.direccion.calle,
-      numeroInterior: this.direccion.numeroInterior || '',
-      numeroExterior: this.direccion.numeroExterior,
-      usuario: this.usuario.username || this.usuario.idUser, // ID o username del usuario
-      Colonia: {
-        idColonia: this.direccion.Colonia.idColonia,
-        nombre: '',
-        codigoPostal: this.direccion.Colonia.codigoPostal || '',
-        municipio: {
-          idMunicipio: 0,
-          nombre: '',
-          estado: {
-            idEstado: 0,
-            nombre: '',
-            pais: {
-              idPais: 0,
-              nombre: '',
-            },
+      idUser: this.idUser,
+      Direcciones: [
+        {
+          idDireccion: this.direccion.idDireccion,
+          calle: this.direccion.calle,
+          numeroInterior: this.direccion.numeroInterior || '',
+          numeroExterior: this.direccion.numeroExterior,
+          Colonia: {
+            idColonia: this.direccion.Colonia.idColonia,
           },
         },
-      },
+      ],
     };
-
-    console.log('Dirección a enviar:', direccionData);
+    this.direccionService.updateDireccion(direccionData as any).subscribe({
+      next: (response) => {
+        console.log('Respuesta del servidor:', response);
+        this.alertService.success('Dirección editada exitosamente');
+        // Emitir eventos si existen
+        if (this.closeModal) this.closeModal.emit();
+        if (this.getUser) this.getUser.emit();
+      },
+      error: (error) => {
+        console.error('Error al editar dirección:', error);
+        const errorMsg = error?.error?.errorMessage || error?.message || 'Error desconocido';
+        this.alertService.error(`Error al editar la dirección: ${errorMsg}`);
+        if (this.closeModal) this.closeModal.emit();
+      },
+    });
+    // Lógica para editar la dirección
+  }
+  addDireccion() {
+    const direccionData = {
+      idUser: this.idUser,
+      Direcciones: [
+        {
+          calle: this.direccion.calle,
+          numeroInterior: this.direccion.numeroInterior || '',
+          numeroExterior: this.direccion.numeroExterior,
+          Colonia: {
+            idColonia: this.direccion.Colonia.idColonia,
+          },
+        },
+      ],
+    };
 
     this.direccionService.addDirecion(direccionData).subscribe({
       next: (response) => {
@@ -108,12 +195,13 @@ export class Form {
         this.alertService.success('Dirección agregada exitosamente');
         // Emitir eventos si existen
         if (this.closeModal) this.closeModal.emit();
-        if (this.cargarUsuarios) this.cargarUsuarios.emit();
+        if (this.getUser) this.getUser.emit();
       },
       error: (error) => {
         console.error('Error al agregar dirección:', error);
         const errorMsg = error?.error?.errorMessage || error?.message || 'Error desconocido';
         this.alertService.error(`Error al agregar la dirección: ${errorMsg}`);
+        if (this.closeModal) this.closeModal.emit();
       },
     });
   }
@@ -153,10 +241,11 @@ export class Form {
           ]
         : [],
     };
+    const formData = new FormData();
+    formData.append('imagenFile', this.selectedFile as Blob);
+    formData.append('usuario', new Blob([JSON.stringify(userData)], { type: 'application/json' }));
 
-    console.log('Usuario a enviar:', userData);
-
-    this.usuarioService.addUser(userData).subscribe({
+    this.usuarioService.addUser(formData).subscribe({
       next: (response) => {
         console.log('Respuesta del servidor:', response);
         this.alertService.success('Usuario creado exitosamente');
@@ -167,11 +256,15 @@ export class Form {
         console.error('Error al crear usuario:', error);
         const errorMsg = error?.error?.errorMessage || error?.message || 'Error desconocido';
         this.alertService.error(`Error al crear el usuario: ${errorMsg}`);
+        if (this.closeModal) this.closeModal.emit();
       },
     });
   }
-  onFileSelected($event: Event) {
-    throw new Error('Method not implemented.');
+  selectedFile: File | null = null;
+  imagePreview: string | ArrayBuffer | null = null;
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+    //this.imagePreview = URL.createObjectURL(this.selectedFile); // Preview
   }
   paises: Pais[] = [];
   estados: Estado[] = [];
@@ -188,9 +281,9 @@ export class Form {
     estatus: 0,
     verify: 0,
     email: '',
+    img: '',
     telefono: '',
     fechaNacimiento: new Date(),
-    img: '',
     celular: '',
     curp: '',
     sexo: '',

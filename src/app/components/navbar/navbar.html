@@ -66,53 +66,53 @@
         </button>
       </div>
 
-      <!-- Usuario -->
       <div
         *ngIf="user"
         class="relative hidden md:block ml-4"
         (mouseenter)="openUserMenu()"
         (mouseleave)="closeUserMenu()"
       >
+        <!-- Botón de usuario -->
         <div class="flex items-center gap-3 cursor-pointer select-none">
           <div class="text-right hidden sm:block">
             <p class="text-sm font-medium text-slate-200 leading-none">{{ user }}</p>
             <p class="text-xs text-slate-400">Conectado</p>
           </div>
-
           <img
-            [src]="userImage || 'https://ui-avatars.com/api/?name=' + user"
+            *ngIf="userImage !== 'null'"
+            src="data:image/png;base64,{{ userImage }}"
             alt="Foto de perfil"
             class="w-10 h-10 rounded-full border border-slate-600 shadow-md object-cover"
           />
+          <ng-template #defaultAvatar>
+            <span>{{ user.charAt(0).toUpperCase() || 'U' }}</span>
+          </ng-template>
+          <ng-container *ngIf="userImage == 'null'">
+            <ng-container *ngTemplateOutlet="defaultAvatar"></ng-container>
+          </ng-container>
         </div>
 
-        <!-- Dropdown -->
-        <div
-          *ngIf="isUserMenuOpen"
-          class="absolute right-0 mt-3 w-44 bg-slate-800 border border-slate-700 rounded-lg shadow-lg py-2 z-50 animate-fade"
-        >
-          <button
-            (click)="onPerfil()"
-            class="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-slate-700"
+        <!-- ✅ Espacio invisible que conecta botón con dropdown -->
+        <div *ngIf="isUserMenuOpen" class="absolute right-0 top-full pt-3">
+          <!-- Dropdown con margen interno -->
+          <div
+            class="w-44 bg-slate-800 border border-slate-700 rounded-lg shadow-lg py-2 animate-fade"
           >
-            Mi Perfil
-          </button>
+            <button
+              (click)="onPerfil()"
+              class="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors"
+            >
+              Mi Perfil
+            </button>
 
-          <button
-            (click)="onConfig()"
-            class="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-slate-700"
-          >
-            Configuración
-          </button>
-
-          <div class="border-t border-slate-700 my-1"></div>
-
-          <button
-            (click)="onLogout()"
-            class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-600/20"
-          >
-            Cerrar Sesión
-          </button>
+            <div class="border-t border-slate-700 my-1"></div>
+            <button
+              (click)="onLogout()"
+              class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-600/20 transition-colors"
+            >
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
       </div>
 

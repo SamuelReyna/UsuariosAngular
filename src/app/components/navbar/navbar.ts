@@ -19,17 +19,19 @@ export class Navbar implements OnInit {
   role: string = '';
   isMenuOpen = false;
   isUserMenuOpen = false;
-  userImage = ''; // opcional, reemplaza con la URL real si la tienes
+  userImage: string | null = null;
+  idUser: string = '';
 
-
-  
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
       this.user = this.storage.getItem('user') || '';
+      this.userImage = this.storage.getItem('img') || null;
+      this.idUser = this.storage.getItem('id') || '';
       this.role = this.storage.getItem('role') || '';
     } else {
       this.router.navigate(['/login']);
     }
+    console.log('Navbar component initialized:', this.userImage);
   }
 
   // Toggle del menú móvil
@@ -69,7 +71,7 @@ export class Navbar implements OnInit {
   }
 
   onPerfil() {
-    this.router.navigate(['/perfil']);
+    this.router.navigate([`/perfil/${this.idUser}`]);
     this.closeMenus();
   }
 

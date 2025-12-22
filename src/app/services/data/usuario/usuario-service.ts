@@ -25,8 +25,6 @@ export interface User {
   Direcciones: direccion[];
 }
 
-
-
 export interface result {
   correct: boolean;
   object: any;
@@ -54,11 +52,10 @@ export class UsuarioService {
       },
     });
   }
-  addUser(user: User): Observable<result> {
-    return this.http.post<result>(`${this.apiUrl}`, user, {
+  addUser(formData: FormData): Observable<result> {
+    return this.http.post<result>(`${this.apiUrl}`, formData, {
       headers: {
         Authorization: `Bearer ${this.auth.getToken()}`,
-        ContentType: 'application/json',
       },
     });
   }
@@ -101,5 +98,25 @@ export class UsuarioService {
         },
       }
     );
+  }
+  changePassword(user: User, newPassword: string): Observable<result> {
+    return this.http.put<result>(
+      `${this.apiUrl}/${user.idUser}`,
+      { password: newPassword },
+      {
+        headers: {
+          Authorization: `Bearer ${this.auth.getToken()}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  }
+  update(user: User): Observable<result> {
+    return this.http.put<result>(`${this.apiUrl}/${user.idUser}`, user, {
+      headers: {
+        Authorization: `Bearer ${this.auth.getToken()}`,
+        'Content-Type': 'application/json',
+      },
+    });
   }
 }

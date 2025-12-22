@@ -28,6 +28,10 @@ export const routes: Routes = [
     component: Details,
   },
   {
+    path: 'perfil/:id',
+    component: Details,
+  },
+  {
     path: 'usuario/form',
     component: Form,
   },
