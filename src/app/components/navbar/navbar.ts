@@ -71,7 +71,7 @@ export class Navbar implements OnInit {
   }
 
   onPerfil() {
-    this.router.navigate([`/perfil/${this.idUser}`]);
+    this.router.navigate([`/usuario/perfil/${this.idUser}`]);
     this.closeMenus();
   }
 

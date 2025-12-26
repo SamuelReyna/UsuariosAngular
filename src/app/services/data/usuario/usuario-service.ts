@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { AuthService } from '../../auth/auth';
 import { Rol } from '../rol/rol-service';
 import { direccion } from '../direccion/direccion-service';
@@ -38,11 +38,25 @@ export class UsuarioService {
   private apiUrl = 'http://localhost:8080/api/usuario';
   private http = inject(HttpClient);
   private auth = inject(AuthService);
-  getUsers(): Observable<result> {
+  getUsers(
+    pagina: number = 1,
+    cantidad: number = 10,
+    campo: string = '',
+    orden: string = 'ASC',
+    busqueda: string = ''
+  ): Observable<result> {
+    const params = new HttpParams()
+      .set('pagina', pagina.toString())
+      .set('cantidad', cantidad.toString())
+      .set('campo', campo)
+      .set('orden', orden)
+      .set('busqueda', busqueda);
+
     return this.http.get<result>(`${this.apiUrl}`, {
       headers: {
         Authorization: `Bearer ${this.auth.getToken()}`,
       },
+      params: params,
     });
   }
   getUser(id: number): Observable<result> {
@@ -67,14 +81,6 @@ export class UsuarioService {
     });
   }
 
-  editUser(user: User): Observable<result> {
-    return this.http.put<result>(`${this.apiUrl}/${user.idUser}`, user, {
-      headers: {
-        Authorization: `Bearer ${this.auth.getToken()}`,
-        ContentType: 'application/json',
-      },
-    });
-  }
   logicalDelete(user: User): Observable<result> {
     return this.http.patch<result>(
       `${this.apiUrl}/estatus/${user.idUser}`,
@@ -83,18 +89,6 @@ export class UsuarioService {
         headers: {
           Authorization: `Bearer ${this.auth.getToken()}`,
           ContentType: 'application/json',
-        },
-      }
-    );
-  }
-  logicalDelete1(user: User): Observable<result> {
-    return this.http.patch<result>(
-      `${this.apiUrl}/estatus/${user.idUser}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${this.auth.getToken()}`,
-          'Content-Type': 'application/json',
         },
       }
     );
@@ -111,7 +105,7 @@ export class UsuarioService {
       }
     );
   }
-  update(user: User): Observable<result> {
+  update(user: any): Observable<result> {
     return this.http.put<result>(`${this.apiUrl}/${user.idUser}`, user, {
       headers: {
         Authorization: `Bearer ${this.auth.getToken()}`,

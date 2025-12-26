@@ -109,7 +109,8 @@
               type="radio"
               name="sexo"
               value="M"
-              [(ngModel)]="usuario.sexo"
+              [checked]="usuario.sexo === 'M '"
+              (change)="usuario.sexo = 'M '"
               class="w-4 h-4 text-blue-600"
               required
             />
@@ -120,7 +121,8 @@
               type="radio"
               name="sexo"
               value="F"
-              [(ngModel)]="usuario.sexo"
+              [checked]="usuario.sexo === 'F '"
+              (change)="usuario.sexo = 'F '"
               class="w-4 h-4 text-blue-600"
               required
             />
@@ -129,7 +131,7 @@
         </div>
       </div>
 
-      <div class="md:col-span-2 lg:col-span-3">
+      <div class="md:col-span-2 lg:col-span-3" *ngIf="!editandoUsuario">
         <label class="block text-sm font-medium text-gray-700 mb-2" for="imagen">
           Fotografía
         </label>
@@ -427,7 +429,7 @@
         </p>
       </div>
 
-      <div>
+      <div *ngIf="!editandoUsuario">
         <label class="block text-sm font-medium text-gray-700 mb-2" for="password">
           Contraseña <span class="text-red-500">*</span>
         </label>
@@ -446,7 +448,7 @@
         </p>
       </div>
 
-      <div>
+      <div *ngIf="!editandoUsuario">
         <label class="block text-sm font-medium text-gray-700 mb-2" for="passwordConfirm">
           Confirmar Contraseña <span class="text-red-500">*</span>
         </label>
@@ -481,11 +483,20 @@
     </button>
     <button
       type="submit"
-      [disabled]="!userForm.form.valid || (showAccountInfo && usuario.password !== passwordConfirm)"
+      [disabled]="
+        !editandoUsuario
+          ? !userForm.form.valid || (showAccountInfo && usuario.password !== passwordConfirm)
+          : !userForm.form.valid
+      "
       class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
     >
-      {{ showAddress && !showAccountInfo ? (editandoDireccion ? 'Editar Dirección' : 'Agregar Dirección') : 'Guardar Usuario' }}
-
+      {{
+        showAddress && !showAccountInfo
+          ? editandoDireccion
+            ? 'Editar Dirección'
+            : 'Agregar Dirección'
+          : 'Guardar Usuario'
+      }}
     </button>
   </div>
 </form>

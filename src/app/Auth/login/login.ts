@@ -9,7 +9,13 @@ import { Router } from '@angular/router';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login implements OnInit{
+export class Login implements OnInit {
+  onForgotPassword() {
+    this.router.navigate(['/forgot-password']);
+  }
+  onRegister() {
+    this.router.navigate(['/register']);
+  }
   username = '';
   password = '';
   rememberMe = false;

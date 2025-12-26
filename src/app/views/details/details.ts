@@ -19,6 +19,7 @@ interface password {
   styleUrl: './details.css',
 })
 export class Details implements OnInit {
+  role: string = '';
   onCancel() {
     this.closeModal();
   }
@@ -83,6 +84,7 @@ export class Details implements OnInit {
 
   ngOnInit(): void {
     this.getUser();
+    this.role = localStorage.getItem('role') || '';
   }
   getUser(): void {
     this.activateRoute.paramMap.subscribe((params) => {

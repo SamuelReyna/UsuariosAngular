@@ -1,4 +1,4 @@
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output, SimpleChanges } from '@angular/core';
 import { PaisService } from '../../services/data/pais/pais-service';
 import { Pais } from '../../services/data/pais/pais-service';
@@ -26,6 +26,8 @@ export class Form {
 
   @Input() idUser: number | null = null;
   @Input() direccionSeleccionada: direccion | null = null;
+  @Input() usuarioSeleccionado: User | null = null;
+  @Input() editandoUsuario: boolean = false;
   @Input() editandoDireccion: boolean = false;
   @Output() closeModal = new EventEmitter<void>();
   @Output() cargarUsuarios = new EventEmitter<void>();
@@ -75,18 +77,64 @@ export class Form {
         } else {
           this.addDireccion();
         }
+      } else if (this.editandoUsuario) {
+        this.modifyUser();
       } else {
         this.addUsuario();
       }
     }
   }
+
+  modifyUser() {
+    const userData = {
+      idUser: this.usuario.idUser,
+      nombreUsuario: this.usuario.nombreUsuario,
+      apellidoPaterno: this.usuario.apellidoPaterno,
+      apellidoMaterno: this.usuario.apellidoMaterno,
+      username: this.usuario.username,
+      email: this.usuario.email,
+      telefono: this.usuario.telefono,
+      fechaNacimiento: this.usuario.fechaNacimiento,
+      celular: this.usuario.celular,
+      curp: this.usuario.curp,
+      sexo: this.usuario.sexo,
+
+      Rol: {
+        idRol: this.usuario.Rol.idRol,
+        nombre: '',
+      },
+    };
+    this.usuarioService.update(userData).subscribe({
+      next: (response) => {
+        console.log('Respuesta del servidor:', response);
+        this.alertService.success('Usuario modificado exitosamente');
+        if (this.cargarUsuarios) this.cargarUsuarios.emit();
+        if (this.closeModal) this.closeModal.emit();
+      },
+      error: (error) => {
+        console.error('Error al modificar usuario:', error);
+        const errorMsg = error?.error?.errorMessage || error?.message || 'Error desconocido';
+        this.alertService.error(`Error al modificar el usuario: ${errorMsg}`);
+        if (this.closeModal) this.closeModal.emit();
+      },
+    });
+
+    // Lógica para modificar usuario
+  }
   ngOnChanges(changes: SimpleChanges): void {
     // Detectar cuando cambia direccionSeleccionada
     if (changes['direccionSeleccionada'] && this.direccionSeleccionada) {
       this.cargarDireccionEnFormulario();
+    } else if (changes['usuarioSeleccionado'] && this.usuarioSeleccionado) {
+      this.cargandoUsuarioFormulario();
     }
   }
 
+  cargandoUsuarioFormulario(): void {
+    if (this.usuarioSeleccionado) {
+      this.usuario = { ...this.usuarioSeleccionado };
+    }
+  }
   cargarDireccionEnFormulario(): void {
     if (this.direccionSeleccionada) {
       // Asignar los valores de la dirección seleccionada al formulario
@@ -325,6 +373,10 @@ export class Form {
         break;
       case 'custom':
         // Usa los valores de los @Input individuales
+        this.showPersonalInfo = true;
+        this.showContactInfo = true;
+        this.showAddress = false;
+        this.showAccountInfo = true;
         break;
       case 'full':
       default:

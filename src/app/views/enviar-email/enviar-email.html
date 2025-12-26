@@ -1,0 +1,51 @@
+<div class="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+  <div class="w-full max-w-md">
+    <!-- Card -->
+    <div class="bg-slate-800 rounded-lg shadow-xl p-8 text-center">
+      <!-- Title -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2">Mi App</h1>
+        <p class="text-slate-400">Verificación de correo</p>
+      </div>
+
+      <!-- Icon -->
+      <div class="flex justify-center mb-6">
+        <div class="w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8 text-blue-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8h18a2 2 0 002-2V8a2 2 0 00-2-2H3a2 2 0 00-2 2v6a2 2 0 002 2z"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Message -->
+      <h2 class="text-xl font-semibold text-white mb-2">¡Correo enviado!</h2>
+
+      <p class="text-slate-400 text-sm mb-6">
+        Hemos enviado un enlace de verificación a tu correo electrónico.
+        <br />
+        Revisa tu bandeja de entrada o la carpeta de spam.
+      </p>
+
+      <!-- Actions -->
+      <div class="flex flex-col gap-3">
+        <button
+         (click)="onLogin()"
+          class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-800"
+        >
+          Ir a Iniciar Sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

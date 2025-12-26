@@ -5,7 +5,6 @@
       <!-- Logo/Title -->
       <div class="text-center mb-8">
         <h1 class="text-3xl font-bold text-white mb-2">Mi App</h1>
-        <p class="text-slate-400">Ingresa a tu cuenta</p>
       </div>
       <!-- Mensaje de Error -->
       <div *ngIf="errorMessage" class="mb-4 p-4 bg-red-500/10 border border-red-500 rounded-lg">
@@ -123,18 +122,12 @@
 
         <!-- Remember & Forgot -->
         <div class="flex items-center justify-between mb-6">
-          <label class="flex items-center">
-            <input
-              type="checkbox"
-              [(ngModel)]="rememberMe"
-              name="rememberMe"
-              class="w-4 h-4 bg-slate-700 border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500"
-            />
-            <span class="ml-2 text-sm text-slate-300">Recordarme</span>
-          </label>
-          <a href="#" class="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+          <button
+            (click)="onForgotPassword()"
+            class="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+          >
             ¿Olvidaste tu contraseña?
-          </a>
+          </button>
         </div>
 
         <!-- Submit Button -->
@@ -151,9 +144,12 @@
       <div class="mt-6 text-center">
         <p class="text-sm text-slate-400">
           ¿No tienes cuenta?
-          <a href="#" class="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+          <button
+            (click)="onRegister()"
+            class="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+          >
             Regístrate aquí
-          </a>
+          </button>
         </p>
       </div>
     </div>

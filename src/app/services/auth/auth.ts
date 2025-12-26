@@ -95,6 +95,56 @@ export class AuthService {
         })
       );
   }
+
+  recoveryPassword(email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/sendEmail?email=${email}`, {}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        let errorMessage = 'Ocurrió un error desconocido';
+        if (error.error instanceof ErrorEvent) {
+          errorMessage = `Error: ${error.error.message}`;
+        } else {
+          errorMessage =
+            error.error?.errorMessage ||
+            error.error?.message ||
+            `Error ${error.status}: ${error.message}`;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+  changePass(newPasswordData: any, token: string): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/changePass?token=${token}`, newPasswordData).pipe(
+      catchError((error: HttpErrorResponse) => {
+        let errorMessage = 'Ocurrió un error desconocido';
+        if (error.error instanceof ErrorEvent) {
+          errorMessage = `Error: ${error.error.message}`;
+        } else {
+          errorMessage =
+            error.error?.errorMessage ||
+            error.error?.message ||
+            `Error ${error.status}: ${error.message}`;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  register(userData: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register`, userData).pipe(
+      catchError((error: HttpErrorResponse) => {
+        let errorMessage = 'Ocurrió un error desconocido';
+        if (error.error instanceof ErrorEvent) {
+          errorMessage = `Error: ${error.error.message}`;
+        } else {
+          errorMessage =
+            error.error?.errorMessage ||
+            error.error?.message ||
+            `Error ${error.status}: ${error.message}`;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
   private router = inject(Router);
   logout(): void {
     this.router.navigate(['login']);
@@ -104,6 +154,23 @@ export class AuthService {
   }
   getToken(): string | null {
     return this.storage.getItem('jwt-token');
+  }
+
+  verifyAccount(token: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/verifyAccount?token=${token}`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        let errorMessage = 'Ocurrió un error desconocido';
+        if (error.error instanceof ErrorEvent) {
+          errorMessage = `Error: ${error.error.message}`;
+        } else {
+          errorMessage =
+            error.error?.errorMessage ||
+            error.error?.message ||
+            `Error ${error.status}: ${error.message}`;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
   }
 
   public isLoggedIn(): boolean {

@@ -1,0 +1,51 @@
+  /* Estilos personalizados para mejorar la responsividad */
+    @media (max-width: 1280px) {
+      .table-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e0 #f7fafc;
+      }
+      
+      .table-scroll::-webkit-scrollbar {
+        height: 8px;
+      }
+      
+      .table-scroll::-webkit-scrollbar-track {
+        background: #f7fafc;
+      }
+      
+      .table-scroll::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 4px;
+      }
+      
+      .table-scroll::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
+      }
+    }
+
+    /* Animación suave para el toggle */
+    .toggle-switch {
+      transition: all 0.3s ease;
+    }
+
+    /* Sombra en scroll */
+    .shadow-scroll {
+      position: relative;
+    }
+
+    .shadow-scroll::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 30px;
+      background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .shadow-scroll.scrollable::after {
+      opacity: 1;
+    }

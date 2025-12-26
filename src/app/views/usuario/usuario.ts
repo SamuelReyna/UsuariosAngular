@@ -5,19 +5,37 @@ import { Router } from '@angular/router';
 import { Navbar } from '../../components/navbar/navbar';
 import { AlertService } from '../../services/alert/alert';
 import { Form } from '../../components/form/form';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-usuario',
-  imports: [CommonModule, Navbar, Form],
+  imports: [CommonModule, Navbar, Form, FormsModule],
   templateUrl: './usuario.html',
   styleUrl: './usuario.css',
 })
 export class Usuario {
   users: User[] = [];
+
+  // Parámetros de paginación y búsqueda
+  paginaActual: number = 1;
+  cantidad: number = 10;
+  totalRegistros: number = 0;
+  totalPaginas: number = 0;
+  Math = Math;
+  // Parámetros de ordenamiento
+  campoOrden: string = '';
+  direccionOrden: string = 'ASC';
+
+  // Búsqueda
+  terminoBusqueda: string = '';
+
+  // ... resto de tus propiedades
+
   private usuarioService = inject(UsuarioService);
   private alertService = inject(AlertService);
-
+  role: string = '';
   ngOnInit(): void {
     this.cargarUsuarios();
+    this.role = localStorage.getItem('role') || '';
   }
 
   private router = inject(Router);
@@ -30,18 +48,73 @@ export class Usuario {
   usuarioASeleccionado: User | null = null;
 
   editUser(user: User): void {
+    this.modalUserCustomFormOpen = true;
+    this.usuarioASeleccionado = user;
     console.log('Editar usuario:', user);
     // Implementa tu lógica aquí
   }
   cargarUsuarios(): void {
-    this.usuarioService.getUsers().subscribe({
-      next: (response) => {
-        this.users = response.object;
-      },
-      error: (err) => {
-        console.log('error al cargar los usuarios', err);
-      },
-    });
+    this.usuarioService
+      .getUsers(
+        this.paginaActual,
+        this.cantidad,
+        this.campoOrden,
+        this.direccionOrden,
+        this.terminoBusqueda
+      )
+      .subscribe({
+        next: (response) => {
+          this.users = response.object.data;
+          this.totalRegistros = response.object.total;
+          this.paginaActual = response.object.pagina;
+          this.totalPaginas = response.object.totalPaginas;
+        },
+        error: (err) => {
+          console.log('error al cargar los usuarios', err);
+        },
+      });
+  }
+
+  // Método para cambiar de página
+  cambiarPagina(nuevaPagina: number): void {
+    if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
+      this.paginaActual = nuevaPagina;
+      this.cargarUsuarios();
+    }
+  }
+
+  // Método para cambiar cantidad de registros por página
+  cambiarCantidad(nuevaCantidad: number): void {
+    this.cantidad = nuevaCantidad;
+    this.paginaActual = 1; // Resetear a la primera página
+    this.cargarUsuarios();
+  }
+
+  // Método para ordenar por columna
+  ordenarPor(campo: string): void {
+    if (this.campoOrden === campo) {
+      // Si ya está ordenado por este campo, cambiar dirección
+      this.direccionOrden = this.direccionOrden === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.campoOrden = campo;
+      this.direccionOrden = 'ASC';
+    }
+    this.paginaActual = 1; // Resetear a la primera página
+    this.cargarUsuarios();
+  }
+
+  // Método para buscar
+  buscar(termino: string): void {
+    this.terminoBusqueda = termino;
+    this.paginaActual = 1; // Resetear a la primera página
+    this.cargarUsuarios();
+  }
+
+  // Método para limpiar búsqueda
+  limpiarBusqueda(): void {
+    this.terminoBusqueda = '';
+    this.paginaActual = 1;
+    this.cargarUsuarios();
   }
   deleteUser(user: User): void {
     this.openModal();
@@ -67,7 +140,7 @@ export class Usuario {
   }
   isModalOpen = false;
   modalFormOpen = false;
-
+  modalUserCustomFormOpen = false;
   openModal() {
     this.isModalOpen = true;
   }
@@ -78,6 +151,7 @@ export class Usuario {
     this.modalFormOpen = false;
     this.isModalOpen = false;
     this.openDisableModal = false;
+    this.modalUserCustomFormOpen = false;
     this.usuarioASeleccionado = null;
   }
   openDisableModal = false;
